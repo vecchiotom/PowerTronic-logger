@@ -26,10 +26,9 @@ else if (System.Environment.OSVersion.Platform == PlatformID.Unix || System.Envi
     string[] l = SerialPortFixer.GetPortNames();
     foreach (var port in l)
     {
-        string portName = LibudevInterop.GetUsbDeviceName(port);
-        if (portName.Contains("SiliconLabs") || portName.Contains("cp210x"))
+        Console.WriteLine("found port: " + port.ToString());
+        if (port.Contains("CP2104"))
             stringList.Add(port);
-
     }
 }
 
@@ -47,6 +46,15 @@ if (stringList.Count > 0)
             Console.WriteLine(d.Rpm + " RPM");
             Console.WriteLine(d.TpsForGraph + "% TPS");
             Console.WriteLine(d.AirTemp + "C Temp");
+            int workerThreads, completionPortThreads;
+            int maxThreads;
+
+            ThreadPool.GetAvailableThreads(out workerThreads, out completionPortThreads);
+            ThreadPool.GetMaxThreads(out maxThreads, out _);
+
+            int runningThreads = maxThreads - workerThreads;
+
+            Console.WriteLine("Running threads: " + runningThreads);
         })
     });
     ECUManager.Instance.AddHandler(new ECUSubscription()

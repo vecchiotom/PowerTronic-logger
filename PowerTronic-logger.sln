@@ -15,17 +15,37 @@ EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
+		Debug|ARM32 = Debug|ARM32
+		Debug|ARM64 = Debug|ARM64
 		Release|Any CPU = Release|Any CPU
+		Release|ARM32 = Release|ARM32
+		Release|ARM64 = Release|ARM64
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{922E98A8-7155-49AD-8E26-AC9D210C2AEF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{922E98A8-7155-49AD-8E26-AC9D210C2AEF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{922E98A8-7155-49AD-8E26-AC9D210C2AEF}.Debug|ARM32.ActiveCfg = Debug|ARM32
+		{922E98A8-7155-49AD-8E26-AC9D210C2AEF}.Debug|ARM32.Build.0 = Debug|ARM32
+		{922E98A8-7155-49AD-8E26-AC9D210C2AEF}.Debug|ARM64.ActiveCfg = Debug|Any CPU
+		{922E98A8-7155-49AD-8E26-AC9D210C2AEF}.Debug|ARM64.Build.0 = Debug|Any CPU
 		{922E98A8-7155-49AD-8E26-AC9D210C2AEF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{922E98A8-7155-49AD-8E26-AC9D210C2AEF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{922E98A8-7155-49AD-8E26-AC9D210C2AEF}.Release|ARM32.ActiveCfg = Release|ARM32
+		{922E98A8-7155-49AD-8E26-AC9D210C2AEF}.Release|ARM32.Build.0 = Release|ARM32
+		{922E98A8-7155-49AD-8E26-AC9D210C2AEF}.Release|ARM64.ActiveCfg = Release|ARM32
+		{922E98A8-7155-49AD-8E26-AC9D210C2AEF}.Release|ARM64.Build.0 = Release|ARM32
 		{91AF263C-0D96-466E-B478-FA6281F37DAE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{91AF263C-0D96-466E-B478-FA6281F37DAE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{91AF263C-0D96-466E-B478-FA6281F37DAE}.Debug|ARM32.ActiveCfg = Debug|Any CPU
+		{91AF263C-0D96-466E-B478-FA6281F37DAE}.Debug|ARM32.Build.0 = Debug|Any CPU
+		{91AF263C-0D96-466E-B478-FA6281F37DAE}.Debug|ARM64.ActiveCfg = Debug|ARM64
+		{91AF263C-0D96-466E-B478-FA6281F37DAE}.Debug|ARM64.Build.0 = Debug|ARM64
 		{91AF263C-0D96-466E-B478-FA6281F37DAE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{91AF263C-0D96-466E-B478-FA6281F37DAE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{91AF263C-0D96-466E-B478-FA6281F37DAE}.Release|ARM32.ActiveCfg = Release|Any CPU
+		{91AF263C-0D96-466E-B478-FA6281F37DAE}.Release|ARM32.Build.0 = Release|Any CPU
+		{91AF263C-0D96-466E-B478-FA6281F37DAE}.Release|ARM64.ActiveCfg = Release|Any CPU
+		{91AF263C-0D96-466E-B478-FA6281F37DAE}.Release|ARM64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
