@@ -1,0 +1,8 @@
+language: csharp
+os:
+- linux
+- windows
+arch:
+- amd64
+- arm64
+dist: trusty
