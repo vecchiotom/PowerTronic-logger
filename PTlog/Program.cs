@@ -29,6 +29,7 @@ else if (System.Environment.OSVersion.Platform == PlatformID.Unix || System.Envi
         string portName = LibudevInterop.GetUsbDeviceName(port);
         if (portName.Contains("SiliconLabs") || portName.Contains("cp210x"))
             stringList.Add(port);
+
     }
 }
 
