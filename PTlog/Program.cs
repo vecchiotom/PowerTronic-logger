@@ -24,6 +24,12 @@ if (System.Environment.OSVersion.Platform == PlatformID.Win32NT)
 else if (System.Environment.OSVersion.Platform == PlatformID.Unix || System.Environment.OSVersion.Platform == PlatformID.MacOSX)
 {
     string[] l = SerialPortFixer.GetPortNames();
+    foreach (var port in l)
+    {
+        string portName = LibudevInterop.GetUsbDeviceName(port);
+        if (portName.Contains("SiliconLabs") || portName.Contains("cp210x"))
+            stringList.Add(port);
+    }
 }
 
 if (stringList.Count > 0)
