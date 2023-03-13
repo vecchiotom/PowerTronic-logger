@@ -1,10 +1,17 @@
 ﻿using Dx.SDK;
 using PTlog;
+using System.ComponentModel;
 using System.IO.Ports;
 using System.Management;
 using System.Text;
 
 List<string> stringList = new List<string>();
+DateTime now = DateTime.MinValue;
+TimeSpan time;
+int milliseconds = 0;
+int elapsed = 0;
+CsvManager csvManager = new CsvManager();
+
 if (System.Environment.OSVersion.Platform == PlatformID.Win32NT)
 {
     ManagementObjectCollection objectCollection = new ManagementObjectSearcher("Select * from Win32_SerialPort").Get();
@@ -37,6 +44,7 @@ if (stringList.Count > 0)
     Console.WriteLine("POWERTRONIC ECU FOUND: " + stringList[0]);
     Console.WriteLine("Starting connection sequence...");
 
+
     ECUManager.Instance.AddHandler(new ECUSubscription()
     {
         Topic = "ECU_REAL_TIME_DATA",
@@ -46,15 +54,23 @@ if (stringList.Count > 0)
             Console.WriteLine(d.Rpm + " RPM");
             Console.WriteLine(d.TpsForGraph + "% TPS");
             Console.WriteLine(d.AirTemp + "C Temp");
-            int workerThreads, completionPortThreads;
-            int maxThreads;
+            if (now == DateTime.MinValue)
+            {
+                now = DateTime.Now;
+                time = now.TimeOfDay;
+                milliseconds = (int)time.TotalMilliseconds;
+                elapsed = 0;
+            }
+            else
+            {
+                int last = milliseconds;
+                now = DateTime.Now;
+                time = now.TimeOfDay;
+                milliseconds = (int)time.TotalMilliseconds;
+                elapsed += milliseconds-last;
+            }
+            csvManager.AppendRow(new RealTimeDataPoint(elapsed, d.Rpm, d.TpsForGraph));
 
-            ThreadPool.GetAvailableThreads(out workerThreads, out completionPortThreads);
-            ThreadPool.GetMaxThreads(out maxThreads, out _);
-
-            int runningThreads = maxThreads - workerThreads;
-
-            Console.WriteLine("Running threads: " + runningThreads);
         })
     });
     ECUManager.Instance.AddHandler(new ECUSubscription()
