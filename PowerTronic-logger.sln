@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31808.319
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PTlog", "ConsoleApp1\PTlog.csproj", "{922E98A8-7155-49AD-8E26-AC9D210C2AEF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PTlog", "PTlog\PTlog.csproj", "{922E98A8-7155-49AD-8E26-AC9D210C2AEF}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dx.SDK", "Dx.SDK\Dx.SDK.csproj", "{91AF263C-0D96-466E-B478-FA6281F37DAE}"
 EndProject
