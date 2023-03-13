@@ -23,7 +23,7 @@ if (System.Environment.OSVersion.Platform == PlatformID.Win32NT)
 }
 else if (System.Environment.OSVersion.Platform == PlatformID.Unix || System.Environment.OSVersion.Platform == PlatformID.MacOSX)
 {
-    stringList.Add("/dev/ttyUSB0");
+    string[] l = SerialPortFixer.GetPortNames();
 }
 
 if (stringList.Count > 0)

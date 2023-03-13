@@ -6,7 +6,9 @@
 
 using Microsoft.Win32.SafeHandles;
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 
@@ -22,6 +24,98 @@ namespace Dx.SDK
         {
             using (new SerialPortFixer(portName))
                 ;
+        }
+
+        public static string[] GetPortNames()
+        {
+            var allPorts = new List<string>();
+
+            if (Directory.Exists("/dev/"))
+            {
+                // cleanup now
+                GC.Collect();
+                // mono is failing in here on linux "too many open files"
+                try
+                {
+                    if (Directory.Exists("/dev/serial/by-id/"))
+                        allPorts.AddRange(Directory.GetFiles("/dev/serial/by-id/", "*"));
+                }
+                catch
+                {
+                }
+
+                try
+                {
+                    allPorts.AddRange(Directory.GetFiles("/dev/", "ttyACM*"));
+                }
+                catch
+                {
+                }
+
+                try
+                {
+                    allPorts.AddRange(Directory.GetFiles("/dev/", "ttyUSB*"));
+                }
+                catch
+                {
+                }
+
+                try
+                {
+                    allPorts.AddRange(Directory.GetFiles("/dev/", "rfcomm*"));
+                }
+                catch
+                {
+                }
+
+                try
+                {
+                    allPorts.AddRange(Directory.GetFiles("/dev/", "*usb*"));
+                }
+                catch
+                {
+                }
+
+                try
+                {
+                    allPorts.AddRange(Directory.GetFiles("/dev/", "tty.*"));
+                }
+                catch
+                {
+                }
+
+                try
+                {
+                    allPorts.AddRange(Directory.GetFiles("/dev/", "cu.*"));
+                }
+                catch
+                {
+                }
+            }
+
+            string[] ports = null;
+
+            try
+            {
+                ports = System.IO.Ports.SerialPort.GetPortNames();
+                // any exceptions will still result in a list
+                ports = ports.Select(p => p?.TrimEnd()).ToArray();
+            }
+            catch
+            {
+            }
+
+            if (ports != null)
+                allPorts.AddRange(ports);
+
+            return allPorts.Distinct().ToArray();
+
+        }
+
+        public static string GetNiceName(string port)
+        {
+            //TODO: get nice name
+            return "";
         }
 
         public void Dispose()

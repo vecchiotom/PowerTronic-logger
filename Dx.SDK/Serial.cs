@@ -43,7 +43,8 @@ namespace Dx.SDK
         {
             if (this._port != null && this._port.IsOpen)
                 this._port.Close();
-            SerialPortFixer.Execute(portName);
+            if (System.Environment.OSVersion.Platform == PlatformID.Win32NT)
+                SerialPortFixer.Execute(portName);
             this._port = new SerialPort();
             this._port.PortName = portName;
             this._port.BaudRate = 57600;
