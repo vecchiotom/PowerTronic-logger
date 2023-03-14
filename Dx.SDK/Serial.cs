@@ -58,7 +58,7 @@ namespace Dx.SDK
             this._port.Open();
             if (true)
                 //Console.WriteLine(">>>>>>>>>>>>>>>>>>Setting event handler");
-            this._port.DataReceived += new SerialDataReceivedEventHandler(this.OnDataReceived);
+                this._port.DataReceived += new SerialDataReceivedEventHandler(this.OnDataReceived);
             this._port.ErrorReceived += new SerialErrorReceivedEventHandler(this.OnErrorReceived);
         }
 
@@ -109,43 +109,43 @@ namespace Dx.SDK
 
                     if (true)
                         //Console.WriteLine("Threshhold is:" + _port.ReceivedBytesThreshold + " byte recvd:" + (object)this._port.BytesToRead);
-                    if (this._port.BytesToRead == 0)
-                        return;
+                        if (this._port.BytesToRead == 0)
+                            return;
                     int responseLength = this.ResponseLength;
                     if (true)
                         //Console.WriteLine(("Data received expected responseLength=" + responseLength + " Actual received:" + (object)this._port.BytesToRead));
-                    if (responseLength == this._port.BytesToRead)
-                    {
-                        responseLength = this._port.BytesToRead;
-                        //Console.WriteLine(responseLength);
-                        this.LastResponse = new byte[responseLength];
-                        this._port.Read(this.LastResponse, 0, responseLength);
-                        //Console.WriteLine(System.Text.Encoding.Default.GetString(LastResponse));
-                        if (this.LastResponse[0] != (byte)252 && Serial.logger.IsErrorEnabled)
-                            Serial.logger.Error((object)"NO command ack received!!");
-                        if (this.LastResponse[responseLength - 1] != (byte)248 && Serial.logger.IsErrorEnabled)
-                            Serial.logger.Error((object)"No command complete received!!");
-                    }
-                    else if (this._port.BytesToRead == 2 && this.connectOptionSelector)
-                    {
-                        this.LastResponse = new byte[2];
-                        this._port.Read(this.LastResponse, 0, 2);
-                        this.connectOptionSelector = false;
-                        Serial.ECUVersionNumber = 1;
-                    }
-                    else if (this._port.BytesToRead == 34)
-                    {
-                        this.LastResponse = new byte[34];
-                        this._port.Read(this.LastResponse, 0, 34);
-                        //Console.WriteLine(System.Text.Encoding.Default.GetString(LastResponse));
-                        Serial.ECUVersionNumber = 2;
-                    }
-                    else if (this._port.BytesToRead == 1048)
-                    {
-                        this.LastResponse = new byte[1048];
-                        this._port.Read(this.LastResponse, 0, 1048);
-                        Serial.ECUVersionNumber = 3;
-                    }
+                        if (responseLength == this._port.BytesToRead)
+                        {
+                            responseLength = this._port.BytesToRead;
+                            //Console.WriteLine(responseLength);
+                            this.LastResponse = new byte[responseLength];
+                            this._port.Read(this.LastResponse, 0, responseLength);
+                            //Console.WriteLine(System.Text.Encoding.Default.GetString(LastResponse));
+                            if (this.LastResponse[0] != (byte)252 && Serial.logger.IsErrorEnabled)
+                                Serial.logger.Error((object)"NO command ack received!!");
+                            if (this.LastResponse[responseLength - 1] != (byte)248 && Serial.logger.IsErrorEnabled)
+                                Serial.logger.Error((object)"No command complete received!!");
+                        }
+                        else if (this._port.BytesToRead == 2 && this.connectOptionSelector)
+                        {
+                            this.LastResponse = new byte[2];
+                            this._port.Read(this.LastResponse, 0, 2);
+                            this.connectOptionSelector = false;
+                            Serial.ECUVersionNumber = 1;
+                        }
+                        else if (this._port.BytesToRead == 34)
+                        {
+                            this.LastResponse = new byte[34];
+                            this._port.Read(this.LastResponse, 0, 34);
+                            //Console.WriteLine(System.Text.Encoding.Default.GetString(LastResponse));
+                            Serial.ECUVersionNumber = 2;
+                        }
+                        else if (this._port.BytesToRead == 1048)
+                        {
+                            this.LastResponse = new byte[1048];
+                            this._port.Read(this.LastResponse, 0, 1048);
+                            Serial.ECUVersionNumber = 3;
+                        }
                 }
                 else
                 {
@@ -155,8 +155,8 @@ namespace Dx.SDK
                     //Console.WriteLine(">>>>>>>>>>>>> this is eof received");
                     foreach (byte num in buffer)
                         //Console.WriteLine(("Recvd:" + (object)num));
-                    if (true)
-                        Serial.logger.Error((object)"Error Received eof ");
+                        if (true)
+                            Serial.logger.Error((object)"Error Received eof ");
                 }
                 this._mre.Set();
             }
@@ -192,17 +192,17 @@ namespace Dx.SDK
                 {
                     if (true)
                         //Console.WriteLine(("Setting threshold to length:" + (object)responseLength));
-                    this._port.ReceivedBytesThreshold = responseLength;
+                        this._port.ReceivedBytesThreshold = responseLength;
                 }
                 else
                 {
                     if (true)
                         //Console.WriteLine("Setting threshold to length:2");
-                    this._port.ReceivedBytesThreshold = 2;
+                        this._port.ReceivedBytesThreshold = 2;
                 }
                 if (true)
                     //Console.WriteLine(("Writing data lenght:" + (object)data.Length));
-                this._port.Write(data, 0, data.Length);
+                    this._port.Write(data, 0, data.Length);
                 Thread.Sleep(100);
             }
             catch (Exception ex)
@@ -228,13 +228,13 @@ namespace Dx.SDK
                 {
                     if (true)
                         //Console.WriteLine(("Setting threshold to length:" + (object)responseLength));
-                    this._port.ReceivedBytesThreshold = responseLength;
+                        this._port.ReceivedBytesThreshold = responseLength;
                 }
                 else
                 {
                     if (true)
                         //Console.WriteLine("Setting threshold to length:2");
-                    this._port.ReceivedBytesThreshold = 2;
+                        this._port.ReceivedBytesThreshold = 2;
                 }
             }
             catch (Exception ex)
@@ -338,8 +338,8 @@ namespace Dx.SDK
                         commandResponsetData.Success = true;
                         if (true)
                             //Console.WriteLine("Connect success!!!");
-                        //Console.WriteLine(("response.Success: " + commandResponsetData.Success));
-                        return commandResponsetData;
+                            //Console.WriteLine(("response.Success: " + commandResponsetData.Success));
+                            return commandResponsetData;
                     }
                     //Console.WriteLine(("response.Success: " + commandResponsetData.Success));
                 }
@@ -351,8 +351,8 @@ namespace Dx.SDK
                         commandResponsetData.Success = true;
                         if (true)
                             //Console.WriteLine("Connect success!!!");
-                        //Console.WriteLine(("response.Success: " + (object)commandResponsetData.Success));
-                        return commandResponsetData;
+                            //Console.WriteLine(("response.Success: " + (object)commandResponsetData.Success));
+                            return commandResponsetData;
                     }
                     //Console.WriteLine(("response.Success: " + (object)commandResponsetData.Success));
                 }
@@ -854,7 +854,7 @@ namespace Dx.SDK
                 {
                     if (Serial.logger.IsInfoEnabled)
                         //Console.WriteLine("After sending char B - Serial");
-                    commandResponsetData.logData = this.LastResponse;
+                        commandResponsetData.logData = this.LastResponse;
                     if (this.LastResponse[0] == (byte)252)
                     {
                         this.TransmitOnly(this.bootLoaderText[Serial.fileIndex], 1);
@@ -899,7 +899,7 @@ namespace Dx.SDK
             {
                 if (Serial.logger.IsInfoEnabled)
                     //Console.WriteLine("Before sending char D - Serial");
-                this.TransmitAndWait(Serial.InitializeData(Command.charLowerCaseD), 2);
+                    this.TransmitAndWait(Serial.InitializeData(Command.charLowerCaseD), 2);
                 if (this.LastResponse.Length == 2)
                 {
                     commandResponsetData.logData = this.LastResponse;
@@ -907,7 +907,7 @@ namespace Dx.SDK
                     {
                         if (Serial.logger.IsInfoEnabled)
                             //Console.WriteLine("After sending char D - Serial");
-                        commandResponsetData.Success = true;
+                            commandResponsetData.Success = true;
                         return commandResponsetData;
                     }
                 }

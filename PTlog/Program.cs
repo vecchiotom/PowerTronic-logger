@@ -1,8 +1,6 @@
 ﻿using Dx.SDK;
 using PTlog;
-using System.ComponentModel;
-using System.IO.Ports;
-using System.Management;
+using System.Reflection;
 using System.Text;
 
 List<string> stringList = SerialPortFixer.GetPortNames();
@@ -11,12 +9,14 @@ TimeSpan time;
 int milliseconds = 0;
 int elapsed = 0;
 CsvManager csvManager = new CsvManager();
-    
+bool verbose = args.Contains("--verbose"), csv = args.Contains("--csv");
+
 
 if (stringList.Count > 0)
 {
     Console.WriteLine("POWERTRONIC ECU FOUND: " + stringList[0]);
-    Console.WriteLine("Starting connection sequence...");
+    if (verbose)
+        Console.WriteLine("Starting connection sequence...");
 
 
     ECUManager.Instance.AddHandler(new ECUSubscription()
@@ -25,9 +25,6 @@ if (stringList.Count > 0)
         Method = new Action<object>((data) =>
         {
             RealTimeData d = data as RealTimeData;
-            Console.WriteLine(d.Rpm + " RPM");
-            Console.WriteLine(d.TpsForGraph + "% TPS");
-            Console.WriteLine(d.AirTemp + "C Temp");
             if (now == DateTime.MinValue)
             {
                 now = DateTime.Now;
@@ -41,9 +38,16 @@ if (stringList.Count > 0)
                 now = DateTime.Now;
                 time = now.TimeOfDay;
                 milliseconds = (int)time.TotalMilliseconds;
-                elapsed += milliseconds-last;
+                elapsed += milliseconds - last;
             }
-            csvManager.AppendRow(new RealTimeDataPoint(elapsed, d.Rpm, d.TpsForGraph));
+            if (csv)
+            {
+                csvManager.AppendRow(new RealTimeDataPoint(elapsed, d.Rpm, d.TpsForGraph));
+            }
+            if (verbose)
+            {
+                Console.WriteLine($"{elapsed}ms\n{d.Rpm} RPM\n{d.TpsForGraph}% TPS\n{d.AirTemp}C Temp");
+            }
 
         })
     });
@@ -54,26 +58,39 @@ if (stringList.Count > 0)
         {
             SimpleCommandResponsetData commandResponsetData = data as SimpleCommandResponsetData;
             //Parallel.Invoke(() => { this.writeCSV(data); });
-            Console.WriteLine("CONNECT RESPONSE:");
+            if (verbose)
+                Console.WriteLine("CONNECT RESPONSE:");
             if (commandResponsetData.Success)
             {
                 string str1 = Encoding.UTF8.GetString(commandResponsetData.logData);
-                Console.WriteLine("Connection successful");
-                Console.WriteLine("lblReceived: " + str1.Substring(1, 16));
-                Console.WriteLine("lblHW1: " + str1.Substring(1, 8));
-                Console.WriteLine("lblSW1: " + str1.Substring(9, 8));
-                Console.WriteLine("lblHW2: " + str1.Substring(17, 8));
-                Console.WriteLine("lblSW2: " + str1.Substring(25, 8));
-                //Console.WriteLine("SERIAL: " + str1.Substring(33, 14));
+                if (verbose) 
+                    Console.WriteLine(
+                        "Connection successful\n" +
+                        "lblReceived: " + str1.Substring(1, 16) + "\n" +
+                        "lblHW1: " + str1.Substring(1, 8) + "\n" +
+                        "lblSW1: " + str1.Substring(9, 8) + "\n" +
+                        "lblHW2: " + str1.Substring(17, 8) + "\n" +
+                        "lblSW2: " + str1.Substring(25, 8) + "\n"
+                    );
+                // Check if the length of str1 is greater than 34
                 if (str1.Length > 34)
                 {
+                    // Get a substring starting at index 47, split the resulting string by newline characters, and store it in an array
                     string[] strArray = str1.Substring(47).Split('\n');
+
+                    // Create a StringBuilder to construct the output string
                     StringBuilder stringBuilder = new StringBuilder();
+
+                    // Iterate over the elements in the array and append them to the StringBuilder with a newline character
                     foreach (string str2 in strArray)
                         stringBuilder.Append(str2.ToString()).AppendLine();
-                    Console.WriteLine("EXTRA: " + stringBuilder.ToString());
+
+                    // If verbose is true, print the output string with a prefix
+                    if (verbose)
+                        Console.WriteLine("EXTRA: " + stringBuilder.ToString());
                 }
-                Console.WriteLine("Sending RealTime command to ECU...");
+                if (verbose)
+                    Console.WriteLine("Sending RealTime command to ECU...");
                 ECUManager.Instance.ConfigHandler.RealTimeConfig = new RealTimeConfiguration()
                 {
                     TpsFunction = new RealTimeFunction()
@@ -111,7 +128,8 @@ if (stringList.Count > 0)
             }
             else
             {
-                Console.WriteLine("Connection failed");
+                if (verbose)
+                    Console.WriteLine("Connection failed");
 
             }
 
@@ -132,7 +150,8 @@ if (stringList.Count > 0)
         Topic = "ECU_TPS_REAL_TIME_DATA",
         Method = new Action<object>((data) =>
         {
-            Console.WriteLine(data.ToString());
+            if (verbose)
+                Console.WriteLine(data.ToString());
         })
     });
     ECUManager.Instance.AddHandler(new ECUSubscription()
@@ -143,11 +162,14 @@ if (stringList.Count > 0)
     try
     {
         ECUManager.enableRealTime = true;
-        Console.WriteLine(stringList[0]);
+        if (verbose)
+            Console.WriteLine(stringList[0]);
         ECUManager.Instance.ECUConnect(stringList[0]);
         //ECUManager.Instance.StartRealTime();
-        Console.WriteLine("CONNECT COMMAND SENT");
-        Console.WriteLine(ECUManager.Instance.isRealTimeStarted);
+        if (verbose)
+            Console.WriteLine("CONNECT COMMAND SENT");
+        if (verbose)
+            Console.WriteLine(ECUManager.Instance.isRealTimeStarted);
 
         /*while (!ThreadHandler.communicating)
         {
@@ -163,6 +185,11 @@ if (stringList.Count > 0)
 }
 else
 {
-    Console.WriteLine("No PowerTronic connected.");
+    if (verbose)
+        Console.WriteLine("No PowerTronic connected.");
 }
 
+AppDomain.CurrentDomain.ProcessExit += (s, e) =>
+{
+    csvManager.Dispose();
+};

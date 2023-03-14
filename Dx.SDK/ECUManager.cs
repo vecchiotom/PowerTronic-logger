@@ -134,7 +134,7 @@ namespace Dx.SDK
             {
                 if (ECUManager.logger.IsErrorEnabled)
                     //Console.WriteLine("Error in ECUConnect command", ex.Message);
-                this.publishResponseToQueue((object)"Error connecting to ECU", "SDK_ERROR");
+                    this.publishResponseToQueue((object)"Error connecting to ECU", "SDK_ERROR");
             }
         }
 
@@ -567,7 +567,7 @@ namespace Dx.SDK
             {
                 //Console.WriteLine("PUBLISHING " + topic);
                 Action<object> m = this.handlers.Find(handler => { return handler.Topic == topic; }).Method;
-                Thread t = new Thread(() => { if (m != null) { m(data);} }) ;
+                Thread t = new Thread(() => { if (m != null) { m(data); } });
                 t.Start();
                 /*this.callBackQueue.Enqueue((object)new ECUMessage()
                 {

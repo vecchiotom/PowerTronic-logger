@@ -1,24 +1,26 @@
-﻿using System.Collections.Generic;
-using System.Threading;
-using CsvHelper;
+﻿using CsvHelper;
+using System.IO;
 
 namespace PTlog
 {
-    public class CsvManager
+    public class CsvManager : IDisposable
     {
         private readonly string _filePath;
         private bool _hasHeader;
         private readonly Queue<object> _dataQueue;
         private readonly Thread _writerThread;
+        private bool _disposed;
 
         public CsvManager()
         {
             _filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "PTlog.csv");
+            if (File.Exists(_filePath))
+                File.Delete(_filePath);
             _hasHeader = File.Exists(_filePath) && File.ReadLines(_filePath).GetEnumerator().MoveNext();
             _dataQueue = new Queue<object>();
             _writerThread = new Thread(WriteData);
+            _writerThread.IsBackground = true;
             _writerThread.Start();
-            //Console.WriteLine("Writer Thread started");
         }
 
         public void WriteHeader(object header)
@@ -29,7 +31,6 @@ namespace PTlog
                 _dataQueue.Enqueue(header);
                 Monitor.PulseAll(_dataQueue);
             }
-
         }
 
         public void AppendRow(object data)
@@ -47,7 +48,6 @@ namespace PTlog
             while (true)
             {
                 // Dequeue the next item to be written
-                //Console.WriteLine("entering lock");
                 object data;
                 lock (_dataQueue)
                 {
@@ -57,8 +57,12 @@ namespace PTlog
                         continue;
                     }
                     data = _dataQueue.Dequeue();
+                }
+
+                try
+                {
                     // Write the data to the CSV file
-                    using (var stream = File.Open(_filePath, FileMode.Append))
+                    using (var stream = File.Open(_filePath, FileMode.Append, FileAccess.Write, FileShare.ReadWrite))
                     using (var writer = new StreamWriter(stream))
                     using (var csv = new CsvWriter(writer, System.Globalization.CultureInfo.InvariantCulture))
                     {
@@ -66,7 +70,7 @@ namespace PTlog
                         if (!_hasHeader)
                         {
                             csv.WriteHeader(point.GetType());
-                            //Console.WriteLine("Writing header");
+                            Console.WriteLine("Writing header");
                             csv.NextRecord();
                             _hasHeader = true;
                         }
@@ -74,6 +78,34 @@ namespace PTlog
                         csv.NextRecord();
                     }
                 }
+                catch (IOException e)
+                {
+                    Console.WriteLine($"Failed to write data to CSV file: {e.Message}");
+                }
+                finally
+                {
+                    // Dispose of file-related objects
+                    data = null;
+                }
+            }
+        }
+
+        public void Dispose()
+        {
+            if (!_disposed)
+            {
+                _disposed = true;
+
+                lock (_dataQueue)
+                {
+                    // Unblock the writer thread and let it finish
+                    Monitor.PulseAll(_dataQueue);
+                }
+
+                _writerThread.Join();
+
+                // Dispose of file-related objects
+                _dataQueue.Clear();
             }
         }
     }

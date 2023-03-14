@@ -9,9 +9,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Management;
 using System.Runtime.InteropServices;
 using System.Text;
-using System.Management;
 
 
 namespace Dx.SDK
@@ -113,7 +113,8 @@ namespace Dx.SDK
                     allPorts.AddRange(ports);
 
                 return allPorts.Distinct().ToList().FindAll((p) => { return p.Contains("CP2104"); });
-            } else if (System.Environment.OSVersion.Platform == PlatformID.Win32NT)
+            }
+            else if (System.Environment.OSVersion.Platform == PlatformID.Win32NT)
             {
                 var stringList = new List<string>();
 

@@ -42,7 +42,7 @@ namespace Dx.SDK
             lock (this.queue.SyncRoot)
             {
                 this.queue.Enqueue(data);
-                
+
                 //Console.WriteLine("Command Enqueued in Queue handler, setting wait queue");
                 this.waitForQueue.Set();
             }
@@ -80,7 +80,7 @@ namespace Dx.SDK
 
         public void Stop()
         {
-            
+
             //Console.WriteLine("Stopping queue thread!!, calling set on stop received");
             this.stopReceived.Set();
             if (this.queueReader == null)
@@ -106,7 +106,7 @@ namespace Dx.SDK
                     {
                         if (this.QueueDequeued != null)
                         {
-                            
+
                             //Console.WriteLine("Dequeuing inside process queue");
                             this.QueueDequeued(data);
                         }
@@ -124,7 +124,7 @@ namespace Dx.SDK
             }
             if (!QueueHandler.logger.IsDebugEnabled)
                 return;
-        //Console.WriteLine("Stop received exiting process queue");
+            //Console.WriteLine("Stop received exiting process queue");
         }
 
         public void Dispose()
@@ -136,7 +136,7 @@ namespace Dx.SDK
 
         private void Dispose(bool disposing)
         {
-            
+
             //Console.WriteLine("Disposing queue handler!!!");
             if (!this.disposed && disposing)
             {

@@ -1,7 +1,4 @@
-﻿using Dx.SDK;
-using System.Text;
-
-namespace PTlog
+﻿namespace PTlog
 {
     internal class ThreadHandler
     {
@@ -15,7 +12,7 @@ namespace PTlog
         public static void handleRealTime(object data)
         {
             //Parallel.Invoke(() => { this.writeCSV(data); });
-            Console.WriteLine(data.ToString());
+                Console.WriteLine(data.ToString());
         }
 
         private static byte[] FormatResponse(byte[] data)
@@ -34,7 +31,7 @@ namespace PTlog
         {
             ThreadHandler.communicating = true;
             //Parallel.Invoke(() => { this.writeCSV(data); });
-            Console.WriteLine(data.ToString());
+                Console.WriteLine(data.ToString());
         }
 
         public static void handleError(object data)
