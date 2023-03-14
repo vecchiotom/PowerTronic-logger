@@ -46,7 +46,10 @@ if (stringList.Count > 0)
             }
             if (verbose)
             {
-                Console.WriteLine($"{elapsed}ms\n{d.Rpm} RPM\n{d.TpsForGraph}% TPS\n{d.AirTemp}C Temp");
+                int currentLineCursor = Console.CursorTop;
+                Console.SetCursorPosition(0, currentLineCursor - 1);
+                Console.Write($"{elapsed}ms {d.Rpm} RPM {d.TpsForGraph}% TPS {d.AirTemp}C Temp".PadRight(Console.WindowWidth));
+                Console.SetCursorPosition(0, currentLineCursor);
             }
 
         })
@@ -58,8 +61,6 @@ if (stringList.Count > 0)
         {
             SimpleCommandResponsetData commandResponsetData = data as SimpleCommandResponsetData;
             //Parallel.Invoke(() => { this.writeCSV(data); });
-            if (verbose)
-                Console.WriteLine("CONNECT RESPONSE:");
             if (commandResponsetData.Success)
             {
                 string str1 = Encoding.UTF8.GetString(commandResponsetData.logData);
@@ -150,8 +151,6 @@ if (stringList.Count > 0)
         Topic = "ECU_TPS_REAL_TIME_DATA",
         Method = new Action<object>((data) =>
         {
-            if (verbose)
-                Console.WriteLine(data.ToString());
         })
     });
     ECUManager.Instance.AddHandler(new ECUSubscription()
@@ -162,14 +161,10 @@ if (stringList.Count > 0)
     try
     {
         ECUManager.enableRealTime = true;
-        if (verbose)
-            Console.WriteLine(stringList[0]);
         ECUManager.Instance.ECUConnect(stringList[0]);
         //ECUManager.Instance.StartRealTime();
         if (verbose)
             Console.WriteLine("CONNECT COMMAND SENT");
-        if (verbose)
-            Console.WriteLine(ECUManager.Instance.isRealTimeStarted);
 
         /*while (!ThreadHandler.communicating)
         {
