@@ -5,39 +5,13 @@ using System.IO.Ports;
 using System.Management;
 using System.Text;
 
-List<string> stringList = new List<string>();
+List<string> stringList = SerialPortFixer.GetPortNames();
 DateTime now = DateTime.MinValue;
 TimeSpan time;
 int milliseconds = 0;
 int elapsed = 0;
 CsvManager csvManager = new CsvManager();
-
-if (System.Environment.OSVersion.Platform == PlatformID.Win32NT)
-{
-    ManagementObjectCollection objectCollection = new ManagementObjectSearcher("Select * from Win32_SerialPort").Get();
-    foreach (ManagementObject managementObject in objectCollection)
-    {
-        if (managementObject["Name"].ToString().StartsWith("Silicon Labs CP210x"))
-        {
-            managementObject["Name"].ToString();
-            int startIndex = managementObject["Name"].ToString().IndexOf("(") + 1;
-            int length = managementObject["Name"].ToString().IndexOf(")") - startIndex;
-            string str = managementObject["Name"].ToString().Substring(startIndex, length);
-            if (!stringList.Contains(str))
-                stringList.Add(str);
-        }
-    }
-}
-else if (System.Environment.OSVersion.Platform == PlatformID.Unix || System.Environment.OSVersion.Platform == PlatformID.MacOSX)
-{
-    string[] l = SerialPortFixer.GetPortNames();
-    foreach (var port in l)
-    {
-        Console.WriteLine("found port: " + port.ToString());
-        if (port.Contains("CP2104"))
-            stringList.Add(port);
-    }
-}
+    
 
 if (stringList.Count > 0)
 {

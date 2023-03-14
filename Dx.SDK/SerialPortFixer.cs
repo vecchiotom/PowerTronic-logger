@@ -11,6 +11,8 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Management;
+
 
 namespace Dx.SDK
 {
@@ -26,90 +28,111 @@ namespace Dx.SDK
                 ;
         }
 
-        public static string[] GetPortNames()
+        public static List<string> GetPortNames()
         {
-            var allPorts = new List<string>();
-
-            if (Directory.Exists("/dev/"))
+            if (System.Environment.OSVersion.Platform == PlatformID.Unix || System.Environment.OSVersion.Platform == PlatformID.MacOSX)
             {
-                // cleanup now
-                GC.Collect();
-                // mono is failing in here on linux "too many open files"
+                var allPorts = new List<string>();
+
+                if (Directory.Exists("/dev/"))
+                {
+                    // cleanup now
+                    GC.Collect();
+                    // mono is failing in here on linux "too many open files"
+                    try
+                    {
+                        if (Directory.Exists("/dev/serial/by-id/"))
+                            allPorts.AddRange(Directory.GetFiles("/dev/serial/by-id/", "*"));
+                    }
+                    catch
+                    {
+                    }
+
+                    try
+                    {
+                        allPorts.AddRange(Directory.GetFiles("/dev/", "ttyACM*"));
+                    }
+                    catch
+                    {
+                    }
+
+                    try
+                    {
+                        allPorts.AddRange(Directory.GetFiles("/dev/", "ttyUSB*"));
+                    }
+                    catch
+                    {
+                    }
+
+                    try
+                    {
+                        allPorts.AddRange(Directory.GetFiles("/dev/", "rfcomm*"));
+                    }
+                    catch
+                    {
+                    }
+
+                    try
+                    {
+                        allPorts.AddRange(Directory.GetFiles("/dev/", "*usb*"));
+                    }
+                    catch
+                    {
+                    }
+
+                    try
+                    {
+                        allPorts.AddRange(Directory.GetFiles("/dev/", "tty.*"));
+                    }
+                    catch
+                    {
+                    }
+
+                    try
+                    {
+                        allPorts.AddRange(Directory.GetFiles("/dev/", "cu.*"));
+                    }
+                    catch
+                    {
+                    }
+                }
+
+                string[] ports = null;
+
                 try
                 {
-                    if (Directory.Exists("/dev/serial/by-id/"))
-                        allPorts.AddRange(Directory.GetFiles("/dev/serial/by-id/", "*"));
+                    ports = System.IO.Ports.SerialPort.GetPortNames();
+                    // any exceptions will still result in a list
+                    ports = ports.Select(p => p?.TrimEnd()).ToArray();
                 }
                 catch
                 {
                 }
 
-                try
-                {
-                    allPorts.AddRange(Directory.GetFiles("/dev/", "ttyACM*"));
-                }
-                catch
-                {
-                }
+                if (ports != null)
+                    allPorts.AddRange(ports);
 
-                try
-                {
-                    allPorts.AddRange(Directory.GetFiles("/dev/", "ttyUSB*"));
-                }
-                catch
-                {
-                }
-
-                try
-                {
-                    allPorts.AddRange(Directory.GetFiles("/dev/", "rfcomm*"));
-                }
-                catch
-                {
-                }
-
-                try
-                {
-                    allPorts.AddRange(Directory.GetFiles("/dev/", "*usb*"));
-                }
-                catch
-                {
-                }
-
-                try
-                {
-                    allPorts.AddRange(Directory.GetFiles("/dev/", "tty.*"));
-                }
-                catch
-                {
-                }
-
-                try
-                {
-                    allPorts.AddRange(Directory.GetFiles("/dev/", "cu.*"));
-                }
-                catch
-                {
-                }
-            }
-
-            string[] ports = null;
-
-            try
+                return allPorts.Distinct().ToList().FindAll((p) => { return p.Contains("CP2104"); });
+            } else if (System.Environment.OSVersion.Platform == PlatformID.Win32NT)
             {
-                ports = System.IO.Ports.SerialPort.GetPortNames();
-                // any exceptions will still result in a list
-                ports = ports.Select(p => p?.TrimEnd()).ToArray();
+                var stringList = new List<string>();
+
+                ManagementObjectCollection objectCollection = new ManagementObjectSearcher("Select * from Win32_SerialPort").Get();
+                foreach (ManagementObject managementObject in objectCollection)
+                {
+                    if (managementObject["Name"].ToString().StartsWith("Silicon Labs CP210x"))
+                    {
+                        managementObject["Name"].ToString();
+                        int startIndex = managementObject["Name"].ToString().IndexOf("(") + 1;
+                        int length = managementObject["Name"].ToString().IndexOf(")") - startIndex;
+                        string str = managementObject["Name"].ToString().Substring(startIndex, length);
+                        if (!stringList.Contains(str))
+                            stringList.Add(str);
+                    }
+                }
+                return stringList.Distinct().ToList();
             }
-            catch
-            {
-            }
-
-            if (ports != null)
-                allPorts.AddRange(ports);
-
-            return allPorts.Distinct().ToArray();
-
+            return new List<string>();
         }
 
         public static string GetNiceName(string port)

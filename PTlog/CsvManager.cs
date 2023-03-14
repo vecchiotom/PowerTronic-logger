@@ -18,7 +18,7 @@ namespace PTlog
             _dataQueue = new Queue<object>();
             _writerThread = new Thread(WriteData);
             _writerThread.Start();
-            Console.WriteLine("Writer Thread started");
+            //Console.WriteLine("Writer Thread started");
         }
 
         public void WriteHeader(object header)
@@ -47,14 +47,12 @@ namespace PTlog
             while (true)
             {
                 // Dequeue the next item to be written
-                Console.WriteLine("entering lock");
+                //Console.WriteLine("entering lock");
                 object data;
                 lock (_dataQueue)
                 {
                     if (_dataQueue.Count == 0)
                     {
-                        Console.WriteLine("Waiting for data");
-                        // Wait for new data to be enqueued
                         Monitor.Wait(_dataQueue);
                         continue;
                     }
@@ -68,12 +66,11 @@ namespace PTlog
                         if (!_hasHeader)
                         {
                             csv.WriteHeader(point.GetType());
-                            Console.WriteLine("Writing header");
+                            //Console.WriteLine("Writing header");
                             csv.NextRecord();
                             _hasHeader = true;
                         }
                         csv.WriteRecord(point);
-                        Console.WriteLine("Writing point");
                         csv.NextRecord();
                     }
                 }
