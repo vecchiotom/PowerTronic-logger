@@ -96,7 +96,7 @@ if (stringList.Count > 0)
                 {
                     TpsFunction = new RealTimeFunction()
                     {
-                        Expression = "x"
+                        Expression = "(x-25)/180"
                     },
                     MapFunction = new RealTimeFunction()
                     {
