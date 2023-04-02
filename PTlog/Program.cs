@@ -3,20 +3,26 @@ using PTlog;
 using System.Reflection;
 using System.Text;
 
-List<string> stringList = SerialPortFixer.GetPortNames();
 DateTime now = DateTime.MinValue;
 TimeSpan time;
 int milliseconds = 0;
 int elapsed = 0;
 CsvManager csvManager = new CsvManager();
-bool verbose = args.Contains("--verbose"), csv = args.Contains("--csv");
-
+bool verbose = args.Contains("--verbose"), csv = args.Contains("--csv"), afr = args.Contains("--afr");
+List<string> stringList = SerialPortFixer.GetPortNames();
+string afrPort = "";
+RS232 rs232 = null;
+if (afr) afrPort = SerialPortFixer.GetPortNames("FT232RL")[0];
 
 if (stringList.Count > 0)
 {
     Console.WriteLine("POWERTRONIC ECU FOUND: " + stringList[0]);
     if (verbose)
         Console.WriteLine("Starting connection sequence...");
+    if (afr)
+    {
+        rs232 = new RS232(afrPort);
+    }
 
 
     ECUManager.Instance.AddHandler(new ECUSubscription()
@@ -48,7 +54,7 @@ if (stringList.Count > 0)
             {
                 int currentLineCursor = Console.CursorTop;
                 Console.SetCursorPosition(0, currentLineCursor - 1);
-                Console.Write($"{elapsed}ms {d.Rpm} RPM {d.TpsForGraph}% TPS {d.AirTemp}C Temp".PadRight(Console.WindowWidth));
+                Console.Write($"{elapsed}ms {d.Rpm} RPM {d.TpsForGraph}% TPS {d.AirTemp}C Temp {rs232.latestAFR}".PadRight(Console.WindowWidth));
                 Console.SetCursorPosition(0, currentLineCursor);
             }
 

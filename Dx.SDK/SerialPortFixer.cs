@@ -28,7 +28,7 @@ namespace Dx.SDK
                 ;
         }
 
-        public static List<string> GetPortNames()
+        public static List<string> GetPortNames(string alt = null)
         {
             if (System.Environment.OSVersion.Platform == PlatformID.Unix || System.Environment.OSVersion.Platform == PlatformID.MacOSX)
             {
@@ -112,7 +112,7 @@ namespace Dx.SDK
                 if (ports != null)
                     allPorts.AddRange(ports);
 
-                return allPorts.Distinct().ToList().FindAll((p) => { return p.Contains("CP2104"); });
+                return allPorts.Distinct().ToList().FindAll((p) => { return p.Contains(alt != null ? alt: "CP2104"); });
             }
             else if (System.Environment.OSVersion.Platform == PlatformID.Win32NT)
             {
@@ -121,7 +121,7 @@ namespace Dx.SDK
                 ManagementObjectCollection objectCollection = new ManagementObjectSearcher("Select * from Win32_SerialPort").Get();
                 foreach (ManagementObject managementObject in objectCollection)
                 {
-                    if (managementObject["Name"].ToString().StartsWith("Silicon Labs CP210x"))
+                    if (managementObject["Name"].ToString().Contains(alt!=null?alt:"Silicon Labs CP210x"))
                     {
                         managementObject["Name"].ToString();
                         int startIndex = managementObject["Name"].ToString().IndexOf("(") + 1;
