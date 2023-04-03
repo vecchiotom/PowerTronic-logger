@@ -8,21 +8,23 @@ TimeSpan time;
 int milliseconds = 0;
 int elapsed = 0;
 CsvManager csvManager = new CsvManager();
-bool verbose = args.Contains("--verbose"), csv = args.Contains("--csv"), afr = args.Contains("--afr");
+bool verbose = args.Contains("--verbose"), csv = args.Contains("--csv"), afr = args.Any(arg => arg.StartsWith("--afr="));
+string searchName = afr ? args.First(arg => arg.StartsWith("--afr=")).Substring(6) : null;
 List<string> stringList = SerialPortFixer.GetPortNames();
-string afrPort = "";
+string afrPort = afr ? SerialPortFixer.GetPortNames(searchName)[0] : "";
 RS232 rs232 = null;
-if (afr) afrPort = SerialPortFixer.GetPortNames("FT232RL")[0];
+
+if (!String.IsNullOrEmpty(afrPort))
+{
+    Console.WriteLine("FOUND RS232 ADAPTER: " + afrPort);
+    rs232 = new RS232(afrPort);
+}
 
 if (stringList.Count > 0)
 {
     Console.WriteLine("POWERTRONIC ECU FOUND: " + stringList[0]);
     if (verbose)
         Console.WriteLine("Starting connection sequence...");
-    if (afr)
-    {
-        rs232 = new RS232(afrPort);
-    }
 
 
     ECUManager.Instance.AddHandler(new ECUSubscription()

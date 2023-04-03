@@ -8,6 +8,7 @@ using Microsoft.Win32.SafeHandles;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Ports;
 using System.Linq;
 using System.Management;
 using System.Runtime.InteropServices;
@@ -118,10 +119,10 @@ namespace Dx.SDK
             {
                 var stringList = new List<string>();
 
-                ManagementObjectCollection objectCollection = new ManagementObjectSearcher("Select * from Win32_SerialPort").Get();
+                ManagementObjectCollection objectCollection = new ManagementObjectSearcher("SELECT * FROM Win32_PnPEntity WHERE Caption like '%(COM%'").Get();
                 foreach (ManagementObject managementObject in objectCollection)
                 {
-                    if (managementObject["Name"].ToString().Contains(alt!=null?alt:"Silicon Labs CP210x"))
+                    if (managementObject["Name"].ToString().Contains(!String.IsNullOrEmpty(alt) ? alt : "Silicon Labs CP210x"))
                     {
                         managementObject["Name"].ToString();
                         int startIndex = managementObject["Name"].ToString().IndexOf("(") + 1;

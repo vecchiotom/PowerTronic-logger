@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "PTlog": {
+      "commandName": "Project",
+      "commandLineArgs": "--verbose --afr"
+    }
+  }
+}
