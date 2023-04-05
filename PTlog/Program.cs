@@ -10,7 +10,7 @@ int milliseconds = 0;
 int elapsed = 0;
 CsvManager csvManager = new CsvManager();
 bool verbose = args.Contains("--verbose"), csv = args.Contains("--csv"), afr = args.Any(arg => arg.StartsWith("--afr="));
-string searchName = afr ? args.First(arg => arg.StartsWith("--afr=")).Substring(6) : null;
+string? searchName = afr ? args.First(arg => arg.StartsWith("--afr=") && arg.EndsWith("\"")).Substring(6) : null;
 List<string> stringList = SerialPortFixer.GetPortNames();
 string afrPort = afr ? SerialPortFixer.GetPortNames(searchName)[0] : "";
 RS232 rs232 = null;
@@ -51,7 +51,7 @@ if (stringList.Count > 0)
             }
             if (csv)
             {
-                csvManager.AppendRow(new RealTimeDataPoint(elapsed, d.Rpm, d.TpsForGraph, afr ? float.Parse(rs232.latestAFR, CultureInfo.InvariantCulture.NumberFormat) : 0.0f));
+                csvManager.AppendRow(new RealTimeDataPoint(elapsed, d.Rpm, d.TpsForGraph, afr ? rs232.latestAFR : 0.0f));
             }
             if (verbose)
             {
