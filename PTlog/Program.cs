@@ -1,5 +1,6 @@
 ﻿using Dx.SDK;
 using PTlog;
+using System.Globalization;
 using System.Reflection;
 using System.Text;
 
@@ -18,16 +19,6 @@ if (!String.IsNullOrEmpty(afrPort))
 {
     Console.WriteLine("FOUND RS232 ADAPTER: " + afrPort);
     rs232 = new RS232(afrPort);
-    Parallel.Invoke(new Action(() =>
-    {
-        while (true)
-        {
-            int currentLineCursor = Console.CursorTop;
-            Console.SetCursorPosition(0, currentLineCursor - 1);
-            Console.WriteLine(rs232.latestAFR);
-            Console.SetCursorPosition(0, currentLineCursor);
-        }
-    }));
 }
 
 if (stringList.Count > 0)
@@ -60,13 +51,13 @@ if (stringList.Count > 0)
             }
             if (csv)
             {
-                csvManager.AppendRow(new RealTimeDataPoint(elapsed, d.Rpm, d.TpsForGraph));
+                csvManager.AppendRow(new RealTimeDataPoint(elapsed, d.Rpm, d.TpsForGraph, afr ? float.Parse(rs232.latestAFR, CultureInfo.InvariantCulture.NumberFormat) : 0.0f));
             }
             if (verbose)
             {
                 int currentLineCursor = Console.CursorTop;
                 Console.SetCursorPosition(0, currentLineCursor - 1);
-                Console.Write($"{elapsed}ms {d.Rpm} RPM {d.TpsForGraph}% TPS {d.AirTemp}C Temp {rs232.latestAFR}".PadRight(Console.WindowWidth));
+                Console.Write($"{elapsed}ms {d.Rpm} RPM {d.TpsForGraph}% TPS {d.AirTemp}C Temp {((afr)? rs232.latestAFR : 0.00)} AFR".PadRight(Console.WindowWidth));
                 Console.SetCursorPosition(0, currentLineCursor);
             }
 
