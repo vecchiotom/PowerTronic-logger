@@ -18,7 +18,16 @@ if (!String.IsNullOrEmpty(afrPort))
 {
     Console.WriteLine("FOUND RS232 ADAPTER: " + afrPort);
     rs232 = new RS232(afrPort);
-    Parallel.Invoke(new Action(() => { while (true) { Console.WriteLine(rs232.latestAFR); } }));
+    Parallel.Invoke(new Action(() =>
+    {
+        while (true)
+        {
+            int currentLineCursor = Console.CursorTop;
+            Console.SetCursorPosition(0, currentLineCursor - 1);
+            Console.WriteLine(rs232.latestAFR);
+            Console.SetCursorPosition(0, currentLineCursor);
+        }
+    }));
 }
 
 if (stringList.Count > 0)

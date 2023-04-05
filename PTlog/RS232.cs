@@ -14,6 +14,7 @@ namespace PTlog
         public RS232(string _port) {
             port = new SerialPort(_port, 9600, Parity.None, 8, StopBits.One);
             port.DataReceived += new SerialDataReceivedEventHandler(port_DataReceived);
+            port.Open();
 
         }
 
