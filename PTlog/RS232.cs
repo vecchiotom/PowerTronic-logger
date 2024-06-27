@@ -8,7 +8,7 @@ using System.Globalization;
 
 namespace PTlog
 {
-    internal class RS232
+    internal class RS232 : IDisposable
     {
         private SerialPort port;
         public  float latestAFR { get; private set; }
@@ -32,6 +32,9 @@ namespace PTlog
 
             }
 
+        }
+        public void Dispose() {
+            port.Close();
         }
 
     }
